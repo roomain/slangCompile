@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="TestSlang/TestSlang.vcxproj" Id="0b18f81e-9058-4513-ad1b-a2aac6528b69" />
+</Solution>
