@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros">
-    <SLANG_DIR>C:\ProjetsGit\VkEngine\thirdparty\install_slang</SLANG_DIR>
+  <PropertyGroup Label="UserMacros">  
+    <SLANG_DIR Condition="exists('D:\ProjetsGit\VkEngine')">D:\ProjetsGit\VkEngine\thirdparty\install_slang</SLANG_DIR>
+    <SLANG_DIR Condition="exists('C:\ProjetsGit\VkEngine')">C:\ProjetsGit\VkEngine\thirdparty\install_slang</SLANG_DIR>
     <SLANG_INC>$(SLANG_DIR)\include</SLANG_INC>
     <SLANG_LIB>$(SLANG_DIR)\lib\$(Configuration)</SLANG_LIB>
     <SLANG_BIN>$(SLANG_DIR)\bin\$(Configuration)</SLANG_BIN>

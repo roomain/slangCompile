@@ -2,7 +2,8 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />  
   <PropertyGroup Label="UserMacros">
-    <CRC_DIR>C:\ProjetsGit\VkEngine\thirdparty\install_crc32</CRC_DIR>
+    <CRC_DIR Condition="exists('D:\ProjetsGit\VkEngine')">D:\ProjetsGit\VkEngine\thirdparty\install_crc32</CRC_DIR>
+    <CRC_DIR Condition="exists('C:\ProjetsGit\VkEngine')">C:\ProjetsGit\VkEngine\thirdparty\install_crc32</CRC_DIR>
     <CRC_INC>$(CRC_DIR)\include</CRC_INC>
     <CRC_LIB>$(CRC_DIR)\lib\$(Configuration)</CRC_LIB>
   </PropertyGroup>

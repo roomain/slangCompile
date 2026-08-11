@@ -143,7 +143,13 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="slang_compilation.cpp" />
+    <ClCompile Include="slang_info.cpp" />
     <ClCompile Include="TestSlang.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="slang_compilation.h" />
+    <ClInclude Include="slang_info.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
