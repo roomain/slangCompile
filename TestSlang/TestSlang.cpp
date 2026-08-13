@@ -22,9 +22,9 @@ void listFiles(const std::filesystem::path& directory)
 int main()
 {
 	auto path = std::filesystem::current_path();
-	std::cout << "Current path: " << path.string();
-	//listFiles(R"(C:\ProjetsGit\VkEngine\common)");
-    //compileSlang(R"(C:\ProjetsGit\TestSlang\shader\shader.slang)");
+	std::cout << "Current path: " << path.string() << "\n";
+	listFiles(path.string());
+    compileSlang(path.string() + R"(\..\shader\shader.slang)");
     slang::shutdown();
 }
 
