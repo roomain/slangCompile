@@ -11,6 +11,8 @@
 *.gch
 *.pch
 
+*.bson
+
 # Linker files
 *.ilk
 
