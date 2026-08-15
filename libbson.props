@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LIBSON_BASE_DIR Condition="exists('D:\ProjetsGit\VkEngine')">D:\ProjetsGit\VkEngine\thirdparty</LIBSON_BASE_DIR>
+    <LIBSON_BASE_DIR Condition="exists('C:\ProjetsGit\VkEngine')">C:\ProjetsGit\VkEngine\thirdparty</LIBSON_BASE_DIR>
+    <LIBSON_DIR>$(LIBSON_BASE_DIR)\install_libbson</LIBSON_DIR>
+    <LIBSON_INC>$(LIBSON_DIR)\include</LIBSON_INC>
+    <LIBSON_LIB>$(LIBSON_DIR)\lib\$(Configuration)</LIBSON_LIB>
+    <LIBSON_BIN>$(LIBSON_DIR)\bin\$(Configuration)</LIBSON_BIN>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(LIBSON_INC);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(LIBSON_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>bson-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link> 
+  </ItemDefinitionGroup>
+  <Target Name="CopyLibBsonDll" AfterTargets="Build">
+    <Copy SourceFiles="$(LIBSON_BIN)\libbson-1.0.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+  <ItemGroup>
+    <BuildMacro Include="LIBSON_BASE_DIR">
+      <Value>$(LIBSON_BASE_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LIBSON_DIR">
+      <Value>$(LIBSON_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LIBSON_INC">
+      <Value>$(LIBSON_INC)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LIBSON_LIB">
+      <Value>$(LIBSON_LIB)</Value>
+    </BuildMacro>
+    <BuildMacro Include="LIBSON_BIN">
+      <Value>$(LIBSON_BIN)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

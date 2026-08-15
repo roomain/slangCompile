@@ -6,7 +6,12 @@
 #include <string>
 #include <array>
 #include "slang_compilation.h"
+
+#pragma warning(push)
+#pragma warning( disable : 4005 )
+#include "BsonDocument.h"
 #include <slang.h>
+#pragma warning(pop)
 
 void listFiles(const std::filesystem::path& directory)
 {
@@ -26,6 +31,25 @@ int main()
 	listFiles(path.string());
     compileSlang(path.string() + R"(\..\shader\shader.slang)");
     slang::shutdown();
+
+	{
+		std::vector<uint8_t> binary{ 'a', 'c', 't' };
+		BsonDocument writer("test.bson");
+		writer.add("test", 5, binary);
+		if (!writer.save())
+			std::cerr << "Can't save " << writer.filename() << std::endl;
+	}
+	uint32_t crc = 0;
+	std::vector<uint8_t> readBin;
+	BsonDocument reader("test.bson");
+	reader.read("test", crc, readBin);
+	std::cout << "Read:\n";
+	std::cout << "\tcrc: " << crc << "\n";
+	std::cout << "\tbinary: {";
+	for (auto character : readBin)
+		std::cout << " " << (char)character;
+	std::cout << " }";
+
 }
 
 // Exécuter le programme : Ctrl+F5 ou menu Déboguer > Exécuter sans débogage
