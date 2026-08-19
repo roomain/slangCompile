@@ -21,7 +21,7 @@ struct Heading
     uint64_t offset;
 };
 
-using Binary = std::vector<int8_t>;
+using Binary = std::vector<char>;
 
 /*File resouces*/
 /* goal is to find and check file modification fast*/
@@ -69,10 +69,12 @@ protected:
     virtual void write(std::ofstream& a_output)const;
     void writeHeaders(std::ofstream& a_output)const;
     void writeBinaries(std::ofstream& a_output)const;
+    void loadHeaders();
 
 public:
     ResourceFile() = default;
     virtual ~ResourceFile();
+    std::vector<std::string> diff(const ResourceFile& other);
     const std::string& filename()const;
 
     virtual bool loadAllFile(const std::string& a_filename);
