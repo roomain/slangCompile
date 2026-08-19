@@ -12,6 +12,7 @@
 *.pch
 
 *.bson
+*.res
 
 # Linker files
 *.ilk
