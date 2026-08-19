@@ -67,9 +67,26 @@ bool ResourceFile::loadBinaries()
 }
 
 
+void ResourceFile::writeHeaders(std::ofstream& a_output)const
+{
+    for (const auto& headerCount : m_headings)
+    {
+        //
+    }
+}
+
+void ResourceFile::writeBinaries(std::ofstream& a_output)const
+{
+    for (const auto& [key, binary] : m_binaryMap)
+    {
+        //
+    }
+}
+
 void ResourceFile::write(std::ofstream& a_output)const
 {
-    //
+    writeHeaders(a_output);
+    writeBinaries(a_output);
 }
 
 bool ResourceFile::save()const

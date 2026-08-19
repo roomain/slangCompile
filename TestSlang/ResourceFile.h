@@ -63,17 +63,21 @@ private:
     std::vector<Heading> m_headings;                        /*!< file headers*/
     std::unordered_map<std::string, Binary> m_binaryMap;    /*!< binaries by header names*/
 
+protected:
+
     void closeFile();
-    void write(std::ofstream& a_output)const;
+    virtual void write(std::ofstream& a_output)const;
+    void writeHeaders(std::ofstream& a_output)const;
+    void writeBinaries(std::ofstream& a_output)const;
 
 public:
     ResourceFile() = default;
-    ~ResourceFile();
+    virtual ~ResourceFile();
     const std::string& filename()const;
 
-    bool loadAllFile(const std::string& a_filename);
-    bool loadHeaders(const std::string& a_filename);
-    bool loadBinaries();
+    virtual bool loadAllFile(const std::string& a_filename);
+    virtual bool loadHeaders(const std::string& a_filename);
+    virtual bool loadBinaries();
 
     bool save()const;
     bool saveAs(const std::string& a_filename)const;
