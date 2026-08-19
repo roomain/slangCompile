@@ -35,9 +35,16 @@ void indent(const int a_level)
 void displayReflectNode(const int level, slang::DeclReflection* a_ReflectNode)
 {
     indent(level);
-    std::cout << a_ReflectNode->getName() << " " << to_string(a_ReflectNode->getKind()) << "\n";
-    for (auto node : a_ReflectNode->getChildren())
-        displayReflectNode(level + 1, node);
+
+    if(a_ReflectNode->getName() == nullptr)
+        std::cout << to_string(a_ReflectNode->getKind()) << "\n";
+    else
+        std::cout << a_ReflectNode->getName() << " " << to_string(a_ReflectNode->getKind()) << "\n";
+    if (a_ReflectNode->getKind() != slang::DeclReflection::Kind::Unsupported)
+    {
+        for (auto node : a_ReflectNode->getChildren())
+            displayReflectNode(level + 1, node);
+    }
 }
 
 

@@ -6,6 +6,8 @@
 #include <string>
 #include <array>
 #include "slang_compilation.h"
+#include "ResourceFile.h"
+#include <crc32c/crc32c.h>
 
 #pragma warning(push)
 #pragma warning( disable : 4005 )
@@ -24,14 +26,54 @@ void listFiles(const std::filesystem::path& directory)
 	}
 }
 
-int main()
+uint32_t computeCRC(const std::string& filename)
+{
+	std::ifstream file(filename, std::ios_base::ate);
+	size_t fileSize = file.tellg();
+	file.seekg(0);
+	Binary bin(fileSize);
+	file.read(bin.data(), fileSize);
+	return crc32c::Crc32c(bin.data(), fileSize);
+}
+
+void listShaders()
 {
 	auto path = std::filesystem::current_path();
-	std::cout << "Current path: " << path.string() << "\n";
-	listFiles(path.string());
-    compileSlang(path.string() + R"(\..\shader\shader.slang)");
-    slang::shutdown();
+	std::filesystem::path directory(path.string() + R"(\..\shader)");
+	ResourceFile resFile;
+	if (std::filesystem::exists(directory))
+	{
+		for (auto const& entry : std::filesystem::recursive_directory_iterator{ directory })
+		{
+			if (entry.is_regular_file() && entry.path().extension() == ".slang")
+			{
+				//std::cout << "Extension" << entry.path().extension() << "\n";
+				Binary bin;
+				compileSlang(entry.path().string(), bin);
+				resFile.emplace(entry.path().filename().string(), 
+					computeCRC(entry.path().string()), 
+					bin);
+				std::cout << entry.path().filename() << "\n";
 
+			}
+		}
+		resFile.saveAs("resource.res");
+	}
+	else
+	{
+		std::cerr << directory.string() << " not exists!\n";
+	}
+}
+
+void testCompilationSlang()
+{
+	auto path = std::filesystem::current_path();
+	std::vector<char> binarySharder;
+	compileSlang(path.string() + R"(\..\shader\shader.slang)", binarySharder);
+}
+
+void testbson()
+{
 	{
 		std::vector<uint8_t> binary{ 'a', 'c', 't' };
 		BsonDocument writer("test.bson");
@@ -49,6 +91,19 @@ int main()
 	for (auto character : readBin)
 		std::cout << " " << (char)character;
 	std::cout << " }";
+}
+
+int main()
+{
+	auto path = std::filesystem::current_path();
+	std::cout << "Current path: " << path.string() << "\n";
+	//listFiles(path.string());
+	listShaders();
+	testCompilationSlang();
+    slang::shutdown();
+
+	testbson();
+
 
 }
 

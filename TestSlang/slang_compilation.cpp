@@ -44,7 +44,7 @@ void createSlangCtx()
 	g_slangCtx.globalSession->createSession(session.sessionDesc, g_slangCtx.session.writeRef());
 }
 
-bool compileSlang(const std::string& a_Filename)
+bool compileSlang(const std::string& a_Filename, std::vector<char>& outData)
 {
 	std::cout << "compile file : " << a_Filename << "\n";
 
@@ -131,12 +131,10 @@ bool compileSlang(const std::string& a_Filename)
 	std::cout << a_Filename << " successfully compiled\n";
 	const size_t wordCount = spirv->getBufferSize() / sizeof(uint32_t);
 	auto outputFile = generateSpirvFilename(a_Filename);
-	std::ofstream out(outputFile);
-	std::vector<uint32_t> result(wordCount);
-	memcpy(result.data(), spirv->getBufferPointer(), spirv->getBufferSize());
-	for(auto data : result)
-		out << data;
-	out.close();
+	
+	outData.clear();
+	outData.resize(spirv->getBufferSize());
+	memcpy(outData.data(), spirv->getBufferPointer(), spirv->getBufferSize());
 	return true;
 }
 

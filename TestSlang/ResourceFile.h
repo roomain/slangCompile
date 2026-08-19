@@ -59,6 +59,7 @@ class ResourceFile
 {
 private:
     std::ifstream m_loader;
+    size_t m_inputFileSize;
     std::string m_filename;
     std::vector<Heading> m_headings;                        /*!< file headers*/
     std::unordered_map<std::string, Binary> m_binaryMap;    /*!< binaries by header names*/
@@ -69,7 +70,7 @@ protected:
     virtual void write(std::ofstream& a_output)const;
     void writeHeaders(std::ofstream& a_output)const;
     void writeBinaries(std::ofstream& a_output)const;
-    void loadHeaders();
+    bool loadHeaders();
 
 public:
     ResourceFile() = default;

@@ -46,10 +46,19 @@ const std::string& ResourceFile::filename()const
     return m_filename;
 }
 
-void ResourceFile::loadHeaders()
+bool ResourceFile::loadHeaders()
 {
+    
     size_t headerCount = 0;
+
+    if (m_inputFileSize < sizeof(size_t))
+        return false;
+
     m_loader >> headerCount;
+
+    if (m_inputFileSize >= (sizeof(size_t) + headerCount * sizeof(Heading)))
+        return false;
+
     for (size_t index : std::ranges::views::iota(headerCount))
     {
         Heading head;
@@ -57,6 +66,7 @@ void ResourceFile::loadHeaders()
         m_loader >> head.crc;
         m_headings.emplace_back(head);
     }
+    return true;
 }
 
 
@@ -64,9 +74,11 @@ void ResourceFile::loadHeaders()
 bool ResourceFile::loadAllFile(const std::string& a_filename)
 {
     clear();
-    m_loader.open(a_filename, std::ios_base::in | std::ios_base::binary);
+    m_loader.open(a_filename, std::ios_base::in | std::ios_base::binary | std::ios_base::ate);
     if (m_loader.is_open())
     {
+        m_inputFileSize = m_loader.tellg();
+        m_loader.seekg(0);
         loadHeaders();
         return loadBinaries();
     }
@@ -76,9 +88,11 @@ bool ResourceFile::loadAllFile(const std::string& a_filename)
 bool ResourceFile::loadHeaders(const std::string& a_filename)
 {
     clear();
-    m_loader.open(a_filename, std::ios_base::in | std::ios_base::binary);
+    m_loader.open(a_filename, std::ios_base::in | std::ios_base::binary | std::ios_base::ate);
     if (m_loader.is_open())
     {
+        m_inputFileSize = m_loader.tellg();
+        m_loader.seekg(0);
         loadHeaders();
         return true;
     }
@@ -179,6 +193,7 @@ void ResourceFile::emplace(const std::string& a_filename, const uint32_t a_crc, 
     else
     {
         Heading header;
+        memset(header.filename, 0, NAME_MAX_SIZE);
         header.crc = a_crc;
         std::memcpy(header.filename, a_filename.c_str(), std::min(NAME_MAX_SIZE, a_filename.size()));
         m_headings.emplace_back(header);
