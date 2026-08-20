@@ -36,6 +36,30 @@ uint32_t computeCRC(const std::string& filename)
 	return crc32c::Crc32c(bin.data(), fileSize);
 }
 
+void loadBinary()
+{
+	std::cout << "----------------------------------\n";
+	std::cout << "Load resource file : resource.res \n";
+	ResourceFile resFile;
+	resFile.loadHeaders("resource.res");
+	std::cout << "Header count: " << resFile.headerCount() << "\n";
+	for (const auto& head : resFile)
+	{
+		std::cout << "File: " << head.filename << "\n";
+		std::cout << "CRC: " << head.crc << "\n\n";
+	}
+	resFile.loadBinaries();
+	std::cout << "Binary count: " << resFile.binayCount() << "\n";
+	for (const auto& head : resFile)
+	{
+		if (auto iter = resFile.findBinary(head.filename); iter != resFile.binaryEnd())
+		{
+			std::cout << "Binary: " << iter->first << "\nSize: " << iter->second.size() << " bytes\n";
+		}
+	}
+
+}
+
 void listShaders()
 {
 	auto path = std::filesystem::current_path();
@@ -47,16 +71,18 @@ void listShaders()
 		{
 			if (entry.is_regular_file() && entry.path().extension() == ".slang")
 			{
-				//std::cout << "Extension" << entry.path().extension() << "\n";
-				Binary bin;
-				compileSlang(entry.path().string(), bin);
-				resFile.emplace(entry.path().filename().string(), 
-					computeCRC(entry.path().string()), 
-					bin);
+				
+				if (Binary bin; compileSlang(entry.path().string(), bin))
+				{
+					resFile.emplace(entry.path().filename().string(),
+						computeCRC(entry.path().string()),
+						bin);
+				}
 				std::cout << entry.path().filename() << "\n";
 
 			}
 		}
+		std::cout << "Save resource file : resource.res \n";
 		resFile.saveAs("resource.res");
 	}
 	else
@@ -99,6 +125,7 @@ int main()
 	std::cout << "Current path: " << path.string() << "\n";
 	//listFiles(path.string());
 	listShaders();
+	loadBinary();
 	testCompilationSlang();
     slang::shutdown();
 

@@ -59,7 +59,7 @@ class ResourceFile
 {
 private:
     std::ifstream m_loader;
-    size_t m_inputFileSize;
+    size_t m_inputFileSize{ 0 };
     std::string m_filename;
     std::vector<Heading> m_headings;                        /*!< file headers*/
     std::unordered_map<std::string, Binary> m_binaryMap;    /*!< binaries by header names*/
@@ -89,7 +89,8 @@ public:
 
 
     using const_binaryIterator = std::unordered_map<std::string, Binary>::const_iterator;
-    const_binaryIterator findBinary(const std::string& a_binaryName);
+    const_binaryIterator findBinary(const std::string& a_binaryName)const;
+    const_binaryIterator binaryEnd()const;
     const Binary& binaryAt(const std::string& a_binaryName);
 
     void clear();

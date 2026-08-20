@@ -56,10 +56,10 @@ bool ResourceFile::loadHeaders()
 
     m_loader >> headerCount;
 
-    if (m_inputFileSize >= (sizeof(size_t) + headerCount * sizeof(Heading)))
+    if (m_inputFileSize <  (sizeof(size_t) + headerCount * sizeof(Heading)))
         return false;
 
-    for (size_t index : std::ranges::views::iota(headerCount))
+    for (size_t index = 0;  index < headerCount; index++)
     {
         Heading head;
         m_loader.read(head.filename, NAME_MAX_SIZE);
@@ -101,7 +101,7 @@ bool ResourceFile::loadHeaders(const std::string& a_filename)
 
 bool ResourceFile::loadBinaries()
 {
-    if (m_loader.is_open() || !m_binaryMap.empty())
+    if (!m_loader.is_open() || !m_binaryMap.empty())
         return false;
 
     size_t index = 0;
@@ -141,6 +141,7 @@ void ResourceFile::writeBinaries(std::ofstream& a_output)const
     {
         memset(bufferName.data(), 0, NAME_MAX_SIZE);
         memcpy(bufferName.data(), key.c_str(), std::min(key.size(), NAME_MAX_SIZE));
+        a_output.write(bufferName.data(), NAME_MAX_SIZE);
         a_output << binary.size();
         a_output.write(binary.data(), binary.size());
     }
@@ -173,9 +174,14 @@ bool ResourceFile::saveAs(const std::string& a_filename)const
     return false;
 }
 
-ResourceFile::const_binaryIterator ResourceFile::findBinary(const std::string& a_binaryName)
+ResourceFile::const_binaryIterator ResourceFile::findBinary(const std::string& a_binaryName)const
 {
     return m_binaryMap.find(a_binaryName);
+}
+
+ResourceFile::const_binaryIterator ResourceFile::binaryEnd()const
+{
+    return m_binaryMap.cend();
 }
 
 const Binary& ResourceFile::binaryAt(const std::string& a_binaryName)

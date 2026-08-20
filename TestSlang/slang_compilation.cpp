@@ -68,7 +68,7 @@ bool compileSlang(const std::string& a_Filename, std::vector<char>& outData)
 	}
 
 	// display reflection
-	displayReflection(slangModule);
+	//displayReflection(slangModule);
 
 	//---------------------------------------
 	// Entry point
