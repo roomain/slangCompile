@@ -27,18 +27,48 @@ ResourceFile::~ResourceFile()
     clear();
 }
 
-std::vector<std::string> ResourceFile::diff(const ResourceFile& other)
+std::vector<ResourceFile::Delta> ResourceFile::diff(const ResourceFile& other)
 {
-    std::vector<std::string> changeList;
+    std::vector<Delta> changeList;
+
+    // get updated and new
     for (const auto& header : other.m_headings)
     {
         if (auto iter = std::ranges::find_if(m_headings, [&header](auto&& curHeader) { return std::string(curHeader.filename) == std::string(header.filename); });
             (iter != m_headings.cend() && iter->crc != header.crc) || iter == m_headings.cend())
         {
-            changeList.emplace_back(header.filename);
+            changeList.emplace_back(
+                Delta{
+                    header,
+                    iter == m_headings.cend() ? DeltaType::delta_new : DeltaType::delta_updated
+                });
         }
     }
     return changeList;
+}
+
+void ResourceFile::merge(const ResourceFile& other)
+{
+    auto diffData = diff(other);
+    for (const auto& changeFile : diffData)
+    {
+        switch (changeFile.type)
+        {
+        case DeltaType::delta_new:
+        case DeltaType::delta_updated:
+            emplace(changeFile.heading.filename, changeFile.heading.crc,
+                other.m_binaryMap.at(changeFile.heading.filename));
+            break;
+        case DeltaType::delta_removed:
+        {
+            auto iter = std::ranges::find_if(m_headings, [&changeFile](auto&& curHeader) 
+                { return std::string(curHeader.filename) == std::string(changeFile.heading.filename); });
+            m_headings.erase(iter);
+            m_binaryMap.erase(changeFile.heading.filename);
+        }
+            break;
+        }
+    }
 }
 
 const std::string& ResourceFile::filename()const
@@ -206,5 +236,23 @@ void ResourceFile::emplace(const std::string& a_filename, const uint32_t a_crc, 
     }
 
     m_binaryMap[a_filename] = a_binary;
+}
 
+void ResourceFile::emplace(const std::string& a_filename, const uint32_t a_crc, Binary&& a_binary)
+{
+    if (auto iter = std::ranges::find_if(m_headings, [&a_filename](auto&& header) { return std::string(header.filename) == a_filename; });
+        iter != m_headings.cend())
+    {
+        iter->crc = a_crc;
+    }
+    else
+    {
+        Heading header;
+        memset(header.filename, 0, NAME_MAX_SIZE);
+        header.crc = a_crc;
+        std::memcpy(header.filename, a_filename.c_str(), std::min(NAME_MAX_SIZE, a_filename.size()));
+        m_headings.emplace_back(header);
+    }
+
+    m_binaryMap[a_filename] = a_binary;
 }

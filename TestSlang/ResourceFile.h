@@ -53,6 +53,12 @@ using Binary = std::vector<char>;
 ...
 */
 
+enum class DeltaType
+{
+    delta_removed,
+    delta_updated,
+    delta_new
+};
 
 //template<typename Resource> requires binary_constructible<Resource>::value
 class ResourceFile
@@ -75,7 +81,14 @@ protected:
 public:
     ResourceFile() = default;
     virtual ~ResourceFile();
-    std::vector<std::string> diff(const ResourceFile& other);
+
+    struct Delta
+    {
+        Heading heading;
+        DeltaType type;
+    };
+    std::vector<Delta> diff(const ResourceFile& other);
+    void merge(const ResourceFile& other);
     const std::string& filename()const;
 
     virtual bool loadAllFile(const std::string& a_filename);
@@ -104,5 +117,6 @@ public:
     const_iterator cend()const { return m_headings.cend(); }
 
     void emplace(const std::string& a_filename, const uint32_t a_crc, const Binary& a_binary);
+    void emplace(const std::string& a_filename, const uint32_t a_crc, Binary&& a_binary);
 };
 
