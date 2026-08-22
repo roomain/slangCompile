@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="BsonDocument.cpp" />
     <ClCompile Include="ResourceFile.cpp" />
+    <ClCompile Include="Resources.cpp" />
     <ClCompile Include="slang_compilation.cpp" />
     <ClCompile Include="slang_info.cpp" />
     <ClCompile Include="TestSlang.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="BsonDocument.h" />
     <ClInclude Include="dynamic_resources.h" />
     <ClInclude Include="ResourceFile.h" />
+    <ClInclude Include="Resources.h" />
     <ClInclude Include="slang_compilation.h" />
     <ClInclude Include="slang_info.h" />
   </ItemGroup>

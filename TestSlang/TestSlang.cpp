@@ -45,14 +45,14 @@ void loadBinary()
 	std::cout << "Header count: " << resFile.headerCount() << "\n";
 	for (const auto& head : resFile)
 	{
-		std::cout << "File: " << head.filename << "\n";
+		std::cout << "File: " << std::string(head.filename.data()) << "\n";
 		std::cout << "CRC: " << head.crc << "\n\n";
 	}
 	resFile.loadBinaries();
 	std::cout << "Binary count: " << resFile.binayCount() << "\n";
 	for (const auto& head : resFile)
 	{
-		if (auto iter = resFile.findBinary(head.filename); iter != resFile.binaryEnd())
+		if (auto iter = resFile.findBinary(head.filename.data()); iter != resFile.binaryEnd())
 		{
 			std::cout << "Binary: " << iter->first << "\nSize: " << iter->second.size() << " bytes\n";
 		}

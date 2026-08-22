@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include "Resources.h"
 #include <fstream>
 
 template<typename T>
@@ -12,16 +13,6 @@ concept binary_constructible = requires(const std::vector<char>&a_data) {
     T(a_data);
 };
 
-constexpr size_t NAME_MAX_SIZE = 64;
-
-struct Heading
-{
-    char filename[NAME_MAX_SIZE];
-    uint32_t crc;
-    uint64_t offset;
-};
-
-using Binary = std::vector<char>;
 
 /*File resouces*/
 /* goal is to find and check file modification fast*/
@@ -53,22 +44,12 @@ using Binary = std::vector<char>;
 ...
 */
 
-enum class DeltaType
-{
-    delta_removed,
-    delta_updated,
-    delta_new
-};
-
-//template<typename Resource> requires binary_constructible<Resource>::value
-class ResourceFile
+class ResourceFile : public Resources
 {
 private:
     std::ifstream m_loader;
     size_t m_inputFileSize{ 0 };
     std::string m_filename;
-    std::vector<Heading> m_headings;                        /*!< file headers*/
-    std::unordered_map<std::string, Binary> m_binaryMap;    /*!< binaries by header names*/
 
 protected:
 
@@ -81,14 +62,6 @@ protected:
 public:
     ResourceFile() = default;
     virtual ~ResourceFile();
-
-    struct Delta
-    {
-        Heading heading;
-        DeltaType type;
-    };
-    std::vector<Delta> diff(const ResourceFile& other);
-    void merge(const ResourceFile& other);
     const std::string& filename()const;
 
     virtual bool loadAllFile(const std::string& a_filename);
@@ -97,24 +70,9 @@ public:
 
     bool save()const;
     bool saveAs(const std::string& a_filename)const;
-    constexpr size_t headerCount()const { return m_headings.size(); }
-    constexpr size_t binayCount()const { return m_binaryMap.size(); }
 
+    void clear()override;
 
-    using const_binaryIterator = std::unordered_map<std::string, Binary>::const_iterator;
-    const_binaryIterator findBinary(const std::string& a_binaryName)const;
-    const_binaryIterator binaryEnd()const;
-    const Binary& binaryAt(const std::string& a_binaryName);
-
-    void clear();
-
-
-    using iterator = std::vector<Heading>::iterator;
-    using const_iterator = std::vector<Heading>::const_iterator;
-    iterator begin() { return m_headings.begin(); }
-    iterator end() { return m_headings.end(); }
-    const_iterator cbegin()const { return m_headings.cbegin(); }
-    const_iterator cend()const { return m_headings.cend(); }
 
     void emplace(const std::string& a_filename, const uint32_t a_crc, const Binary& a_binary);
     void emplace(const std::string& a_filename, const uint32_t a_crc, Binary&& a_binary);
